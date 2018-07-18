@@ -1,0 +1,9 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-06-28T21:40:22+08:00
+
+====== Weekly ======
+Created 星期四 28 六月 2018
+
+1. check the video frame in artoolkit
+2. aruco library testing 

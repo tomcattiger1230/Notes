@@ -1,0 +1,12 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-07-03T22:43:32+08:00
+
+====== brew ======
+Created None
+
+brew is a very important tool in osx. One can maintain different libraries or applications through brew.
+
+command to install 
+
+''/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"''

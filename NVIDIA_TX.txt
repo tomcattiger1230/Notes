@@ -1,0 +1,8 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-07-02T09:59:25+08:00
+
+====== NVIDIA TX ======
+Created 星期一 02 七月 2018
+
+NVIDIA TX is a mobile/embeded develop kit which conatains a CPU and a power GPU. 

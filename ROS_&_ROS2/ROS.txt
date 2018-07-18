@@ -1,0 +1,11 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-07-02T09:24:05+08:00
+
+====== ROS ======
+Created 星期一 02 七月 2018
+
+This folder contains some introductions about ROS1. 
+
+1. install ROS in OS X 
+2. robot modeling in ROS

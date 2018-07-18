@@ -1,0 +1,8 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-07-02T09:23:55+08:00
+
+====== ROS & ROS2 ======
+Created 星期一 02 七月 2018
+
+ROS and ROS2 are well-known robotics operating system. Currently most of the resources are 

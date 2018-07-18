@@ -1,0 +1,39 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-07-15T10:49:09+02:00
+
+====== Robot Modeling ======
+Created 星期日 15 七月 2018
+
+===== Using URDF =====
+URDF is unified robot description format. It follows the rule of XML. Some tags are introduced in the following sections, more can be refered in http://wiki.ros.org/urdf/XML
+
+==== URDF tags ====
+
+=== link ===
+it represents a single link, 
+	<link name="<name of the link>">
+	<inertial> ... </inertial>
+	<visiual> ... </visual>
+	<collision> ... </collision>
+	</link>
+
+=== joint ===
+joint is bewteen two links,
+	<joint name="<name of the joint>">
+	<parent link="link1"/>
+	<child link="link2"/>
+	<calibration ...[[/>]]
+	<dynamics damping .../>
+	<limit effort .../>
+	</joint>
+
+=== robot ===
+add all links and joints in this script, 
+	<robot name="<name of the robot>">
+	<link> ... </link>
+	<link> ... </link>
+	<joint> ... </joint>
+	<joint> ... </joint>
+	</robot>
+	

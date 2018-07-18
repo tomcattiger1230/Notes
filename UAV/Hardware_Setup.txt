@@ -1,0 +1,9 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-07-03T14:38:08+08:00
+
+====== Hardware Setup ======
+Created None
+
+1. Hex-rotor or quadrotor with 8 porpellers
+2. Pixhawk + NVIDIA TX2 for control and algorithms 

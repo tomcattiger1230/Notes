@@ -1,0 +1,25 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-07-17T16:43:33+02:00
+
+====== Hector Quadrotor ======
+Created 星期二 17 七月 2018
+
+This package is very useful for develop a quadrotor in a ROS-Gazebo environment. 
+
+===== Install =====
+Install this package has a little difficulty. All following git-ed directories shoud be installed in {caktin}/src
+1. clone the original package from git
+	git clone https://github.com/tu-darmstadt-ros-pkg/hector_quadrotor.git 
+If one does catkin_make right now, it will return many erros
+so, one should continue doing:
+2. sudo apt install ros-kinetic-geographic-msgs 
+3. git clone https://github.com/ros-geographic-info/geographic_info.git
+4. git clone -b kinetic-devel https://github.com/ros-controls/ros_control.git 
+5. git clone -b kinetic-devel https://github.com/ros-controls/realtime_tools.git
+6. git clone -b kinetic-devel https://github.com/ros-controls/control_toolbox.git
+7. it clone -b kinetic-devel https://github.com/tu-darmstadt-ros-pkg/hector_gazebo.git
+8. git clone https://github.com/tu-darmstadt-ros-pkg/hector_localization.git
+9. git clone https://github.com/ros-geographic-info/unique_identifier.git
+10. git clone https://github.com/ros-simulation/gazebo_ros_pkgs.git
+

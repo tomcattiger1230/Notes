@@ -1,0 +1,114 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-07-03T22:33:39+08:00
+
+====== Install in OSX ======
+Created None
+
+Install ROS1 is a very difficult job. 
+
+Here are some introduction in my case:
+0. require MacOS 10.9 develop kit
+1. create a new python environment
+	This step is not the 'must do' step, just because I've installed Anaconda to organize my python environment. 
+	The ROS 1 only can be run after python2, therefore one should create an environment with python2, like:
+	''conda create -n ros_env python=2''
+2. install brew and some basic settings 
+	a. install brew [[OSX related:brew]] firstly
+	b. ''brew update''
+	c. ''brew install cmake''
+	d. ''brew tap ros/hydro''
+	e. ''brew tap osrf/simulation''
+	f. ''brew tap homebrew/versions''
+	g. ''brew tap homebrew/science''
+	h. check if the following directory exist '''{Anaconda}/envs/ros_env/lib/python2.7/site-packages''', if not, create it
+	i. ''echo "$(brew --prefix)/lib/python2.7/site-paxkages" >> {Anaconda}/envs/ros_env/lib/python2.7/site-packages/homebrew.pth''
+	j. ''brew install boost boost-python''
+		then copy libs from boost-python to boost 
+			 ''cp /usr/local/Cellar/boost-python/1.67.0/lib/* /usr/local/Cellar/boost/1.67.0_1/lib/''
+4. initialization 
+	a. ''pip install --upgrade pip setuptools''
+	b. ''pip install wxPython''
+	c. ''pip install -U wstool setuptools rosdep rosinstall rosinstall_generator rospkg catkin-pkg Distribute sphinx''
+	d. ''rosdep init''
+	e. ''rosdep update''
+5. create a workspace and build catkin packages
+	a. ''mkdir ~/ros_catkin_ws''
+	b. ''cd ~/ros_catkin_ws''
+	c. ''rosinstall_generator desktop_full --rosdistro kinetic --deps --wet-only --tar > kinetic-desktop-full-wet.rosinstall''
+	d. ''wstool init -j8 src kinetic-desktop-full-wet.rosinstall''
+	e. ''rosdep install --from-paths src --ignore-src --rosdistro kinetic -y --skip-keys="google-mock python-wxtools gazebo gtest"''
+	f. update ros_tutorials 
+		''rm -rf src/ros_tutorials src/roscpp_tutorials src/rospy_tutorials src/turtlesim''
+		''cd src''
+		''git clone https://github.com/ros/ros_tutorials.git''
+		''cd ..''
+		''rm -rf build_isolated'' 
+	g. ''./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release -DBOOST_ROOT=/usr/local/Cellar/boost/1.67.0_1 -DBOOST_LIBRARYDIR=/usr/local/Cellar/boost/1.67.0_1/lib -DBOOST_INCLUDEDIR=/usr/local/Cellar/boost/1.67.0_1/include/boost''
+	h. another choice of building is
+		''catkin config --install  --install-space /opt/ros/kinetic --cmake-args \''
+		''-DCMAKE_FIND_FRAMEWORK=LAST \''
+		''-DCATKIN_ENABLE_TESTING=1 \''
+		''-DCMAKE_BUILD_TYPE=Release \''
+		''-DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -DQT_MAC_USE_COCOA"'' ''-DBOOST_ROOT=/usr/local/Cellar/boost/1.67.0_1 -DBOOST_LIBRARYDIR=/usr/local/Cellar/boost/1.67.0_1/lib''  ''-DBOOST_INCLUDEDIR=/usr/local/Cellar/boost/1.67.0_1/include/boost -Wno-dev''
+		''catkin build --limit-status-rate 1''
+j. some special cases one may need to solve
+	a. one may need to skip some keys during the installation, e.g. --skip-keys="google-mock python-wxtools gazebo gtest"
+	b. qt5 problem — 
+		1. ''brew install qt5 pyqt5''
+		2. ''cd /usr/local/Cellar''
+		3. ''sudo ln -s pyqt pyqt5''
+		4. ''sudo ln -s qt qt5''
+	c. several link problem
+		1. if one is not writeable, set it with ''sudo chmod 777 {some files or directory}''
+	d. boost problem
+		since up 1.67 the **microseconds **should be int, therefore something like 1000.0 → 1000 need to be adjusted in h/cpp files or change the type into **int**
+		such as 
+			src/bond_core/bondcpp/src/bond.cpp;
+			src/actionlib/src/connection_monitor.cpp
+			src/actionlib/include/actionlib/destruction_guard.h
+			src/actionlib/include/actionlib/server/simple_action_server_imp.h
+			src/actionlib/include/actionlib/client/simple_action_client.h
+			src/laser_assembler/test/test_assembler.cpp
+			src/roscpp_core/rostime/include/ros/impl/duration.h
+			src/roscpp_core/rostime/include/ros/impl/time.h
+			
+	e. sip error 
+		''mkdir -p /usr/local/share/sip''
+		''ln -s /usr/local/opt/pyqt/share/sip/Qt5 /usr/local/share/sip/PyQt5''
+	f. geometry2/tf2 error
+		in file src/geometry2/tf2/src/buffer_core.cpp
+		https://github.com/ros/geometry2/pull/279/files
+		change ''logWarn'' to ''CONSOLE_BRIDGE_logWarn'' and ''logError'' to ''CONSOLE_BRIDGE_logError''
+	g. error: no matching function for call to 'memchr'
+		change the cmake file ''src/nodelet_core/nodelet/CMakeLists.txt''
+		''catkin_package(''
+		''INCLUDE_DIRS include''
+		''LIBRARIES nodeletlib''
+		''CATKIN_DEPENDS bondcpp message_runtime pluginlib rosconsole roscpp std_msgs''
+		''DEPENDS Boost)''
+	h. roscpp tutorial error
+		by now there is not a better way to solve this problem and just remove it from **./src**
+	i. boost-python problem
+		if one has chosen boost version over 1.67 (included), the rule for CMake to detect boost-python has been changed. 
+		in the following directories, one should modify the **CMakeList.txt** file to apply the new rule
+			1. ''src/vision_opencv/cv_bridge''
+			2. ''src/image_common/camera_calibration_parsers''
+		and change **python** to **python27** in the **CMakeList.txt** file.
+	j. yaml-cpp releases require C++11 ==> compile error 
+		add command in src/image_common/camera_calibration_parsers/CMakeLists.txt
+			set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+	k. ignition-math2 not found
+		''brew install ignition-math2'' or ''brew link ignition-math2''
+	l. boost/tr1 problem
+		src/rospack/include/rospack/rospack.h
+		src/rospack/src/rospack.cpp
+		src/rospack/src/utils.cpp
+
+ 
+		
+7. remaining problems
+	One have to remove ros_gazebo_video package to build the whole srcs. The error is 
+		error: 'createInstance' marked 'override' but does not override any member functions[0m
+			  public: virtual Ogre::RTShader::SubRenderState *createInstance(
+

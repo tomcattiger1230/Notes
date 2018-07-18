@@ -1,0 +1,259 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-07-02T09:56:05+08:00
+
+====== Artoolkit ======
+Created 星期一 02 七月 2018
+
+This note is around the setting of artoolkit. 
+
+ARToolkit's original website is out of server. One can only download the package from Github. The newest version is 6, but in the experiment we've used 5. 
+
+===== Download =====
+One can use 
+''git clone https://github.com/artoolkit/artoolkit5.git'' 
+to his local directory. Also the documentation files can be found https://github.com/artoolkit/artoolkit-docs
+
+===== Build your own artoolkit project =====
+In official artoolkit provides Visual Studio 2013 or XCode project. It can also be built through make file, which is a more flexible way to build the artoolkit application. 
+
+==== OSX ====
+
+=== XCode ===
+One can create a new app project based on example applications. One should notice that, the artoolkit is quite old and it's based on MacOSX10.9. The newer version of XCode has no more support of QT. Therefore, an error occurs //'QTKit/QTKit.h' file not found //. To build the artoolkit project with XCode, one should install MaxOSX10.9 development kit. 
+
+1. unzip the compress file through
+	''tar xf MacOSX10.9.sdk.tar.xz''
+2. move the directory to Xcode SDKs 
+	''sudo mv -vf MacOSX10.9.sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs''
+3. edit the info file using sudo 
+	''sudo vim /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Info.plist''
+	and change the minimum version from 10.11 back to 10.9
+	'''
+	<key>MinimumSDKVersion</key>
+	     <string>10.9</string>
+	'''
+
+4. change the base SDK as 10.9 in the project settings
+
+=== Makefile ===
+It is more common to build a artoolkit application using makefile. The files are stored in the directory '**{artoolkit}/build/new_test**'. After every modification, one should re-build the project using ''make ''command. The generated application is stored in '**{artoolkit}/bin/test**'. 
+
+The makefile should be set as following,
+	
+	INC_DIR= ../../include
+	LIB_DIR= ../../lib
+	BIN_DIR= ../../bin
+	
+	CC=g++
+	LDFLAG= -L$(LIB_DIR)/macosx-universal -L$(LIB_DIR)
+	LIBS= -lARgsub -lARvideo -lAR -lARICP -lAR -llcm -framework Accelerate -framework QTKit -framework CoreVideo -framework Carbon -framework GLUT -framework OpenGL -framework Cocoa -ljpeg
+	CFLAG= -O3 -std=c++0x  -DHAVE_NFT=1 -I$(INC_DIR)
+	
+	OBJS = model_obj.o
+	HEADERS = test.hpp model_obj.hpp ./comm_robot/comm_rob_t.hpp
+	
+	all: $(BIN_DIR)/test
+	
+	$(BIN_DIR)/test: test.o $(OBJS)
+		$(CC) -o $(BIN_DIR)/test test.o $(OBJS) $(LDFLAG) $(LIBS)
+	
+	test.o: test.cpp #$(HEADERS)
+		$(CC) -c $(CFLAG) test.cpp
+	
+	model_obj.o: model_obj.cpp #model_obj.hpp
+		$(CC) -c $(CFLAG) model_obj.cpp
+	
+	clean:
+		rm -f *.o
+		rm -f $(BIN_DIR)/test
+	
+	allclean:
+		rm -f *.o
+		rm -f $(BIN_DIR)/test
+		rm -f Makefile
+	
+	distclean:
+		rm -f *.o
+		rm -f Makefile
+
+In the setting the LCM libraray is added using ''-llcm.'' One can ref from [[Communication:LCM]].  
+
+
+==== Ubuntu ====
+In Linux one can build the project using Makefile. It's quite simular to the setting in OSX. 
+	INC_DIR= ../../include
+	LIB_DIR= ../../lib
+	BIN_DIR= ../../bin
+	
+	CC=g++
+	LDFLAG=-L/usr/lib/x86_64-linux-gnu -L/usr/lib64 -L$(LIB_DIR)/linux-x86_64 -L$(LIB_DIR)
+	LIBS= -lARgsub -lARgsub_lite -lAR2 -lARvideo -lAR -lARICP -lAR -llcm -lglut -lGLU -lGL -lX11 -lm -lpthread -ljpeg
+	CFLAG= -std=c++0x -O3 -fPIC -march=core2 -DHAVE_NFT=1 -I/usr/include/x86_64-linux-gnu -I$(INC_DIR)
+	
+	OBJS = model_obj.o
+	HEADERS = test.hpp model_obj.hpp ./comm_robot/comm_rob_t.hpp
+	
+	all: $(BIN_DIR)/test
+	
+	$(BIN_DIR)/test: test.o $(OBJS)
+			$(CC) -o $(BIN_DIR)/test test.o $(OBJS) $(LDFLAG) $(LIBS)
+	
+	test.o: test.cpp $(HEADERS)
+			$(CC) -c $(CFLAG) test.cpp
+	
+	model_obj.o: model_obj.cpp model_obj.hpp
+			$(CC) -c $(CFLAG) model_obj.cpp
+	
+	clean:
+			rm -f *.o
+			rm -f $(BIN_DIR)/test
+	
+	allclean:
+			rm -f *.o
+			rm -f $(BIN_DIR)/test
+			rm -f Makefile
+	
+	distclean:
+			rm -f *.o
+			rm -f Makefile
+
+
+==== Windows ====
+By now one can only build an application in VS2013. But I don't have much experience. 
+
+===== Camera settings =====
+
+==== Deactivate auto focus ====
+In Ubuntu, one can use command ''uvcdynctrl'' (installed through apt-get)
+	''uvcdynctrl -d video1 -s 'Focus, Auto' 0''
+where ''video1 ''is the second camera in this PC, one should adjust this parameter according to real situation
+
+For OSX or Windows is still unknown.
+
+==== Choose the camera and resolution ====
+Since the workstation may have more than one camera, the appplication should known which camera is used for localization. Also, the resolution should also be adjusted according the resultion requests or the balance with frame per second.
+
+	//set the camera 1 as image device usually 0 is onboard camera and 1 is the first external camera
+	// in OSX
+	''char abc[] = "-source=1 -width=1280 -height=720";'' // or 1920 1080
+	// in Ubuntu
+	''char abc[] = "-device=/dev/video1 -width=1280 -height=720";''
+
+Then apply this setting in:
+	''if(arVideoOpen(abc)<0) exit(0);''
+
+
+===== Calibration =====
+The calibration is very important for obtaining a good localization result. artoolkit has provided a tool to calibrate the camera. But it is odd, that the calibration dosen't work always. The currently best version of camera calibration data is '{**artoolkit}/bin/xzpdata2/test4.dat**'. 
+
+One can create his own new calibration data through the application '**{artoolkit}/bin/calib_camera**'. Some special settings should be noticed.
+	1. CHESSBOARD_CORNER_NUM_X: the number of intersection points in x-axis
+	2. CHESSBOARD_CORNER_NUM_Y: the number of intersection points in y-axis
+	3. CHESSBOARD_PATTERN_WIDTH: the width of each grid
+	4. CALIB_IMAGE_NUM: the number of images will be taken
+And the chessboard can be found in '**{artoolkit}/doc/patterns/**'
+
+===== Pattern generation =====
+Once the calibration file is obtained, one can use the calibration file to create pattern files. The application can be used is under '**{artoolkit}/bin/mk_patt**'. 
+
+===== Localization settings =====
+
+==== In hpp file ====
+In hpp file, one should declare the calibration file, pattern names, and also some setting around LCM. 
+
+1. LCM
+		  // for using LCM
+	''#include <lcm/lcm-cpp.hpp>''
+	// for Stigmergy or another programs in RMB
+	''#include "comm_robot/comm_rob_t.hpp"''
+	// for ITM
+	''#include "itmessage/vector_t.hpp"''
+	
+	// create lcm object
+	''string udpm = "udpm://239.255.76.67:7667?ttl=1";''
+	''lcm::LCM lcm_handler(udpm);''
+	// create a custom message handler
+	// for stigmergy
+	''comm_robot::comm_rob_t locmsg_handler;''
+	// itm
+	''itmessage::vector_t locmsg_handler;''
+	''itmessage::vector_t raspberry_handler;''
+	''vector<double> robot_states(6+4*6, 0);'' // 6 for object position angle/velocity and 4 pos for each robot;
+2. calibration file
+	''#define             CPARA_NAME       "xzpdata2/test4.dat"''
+3. patterns 
+	 // Path of the pattern, define 1 ref and 5 object pattern
+	''char const *Patterns[] = {"xzpdata2/Or_16.patt", "xzpdata2/A_16.patt", "xzpdata2/B_16.patt","xzpdata2/C_16.patt", "xzpdata2/D_16.patt", "xzpdata2/E_16.patt", "xzpdata2/F_16.patt", "xzpdata2/G_16.patt"};''
+
+
+==== In cpp file ====
+In cpp file, one should declare the setting of markers, and send the localization message through LCM
+1. Marker settings
+	''OBJECT_T   object[10] = {''
+	''        { Patterns[0], -1, 1, 0, 160.0, { 0.0, 0.0 } }, ''// 160 is the size of the marker (in mm), 0 is the first marker[ref]
+	''        { Patterns[1], -1, 2, 0, 160.0, { 0.0, 0.0 } }, ''// A
+	''        { Patterns[2], -1, 3, 0, 160.0, { 0.0, 0.0 } }, ''// B
+	''        { Patterns[3], -1, 4, 0, 160.0, { 0.0, 0.0 } }, ''// etc.
+	''        { Patterns[4], -1, 5, 0, 160.0, { 0.0, 0.0 } },''
+	''        { Patterns[5], -1, 6, 0, 160.0, { 0.0, 0.0 } },''
+	''        { Patterns[6], -1, 3, 0, 160.0, { 0.0, 0.0 } },''
+	''        { Patterns[7], -1, 4, 0, 160.0, { 0.0, 0.0 } },''
+	''        { Patterns[8], -1, 5, 0, 160.0, { 0.0, 0.0 } },''
+	''        { Patterns[9], -1, 6, 0, 160.0, { 0.0, 0.0 } }''
+	''};''
+2. LCM settings 
+	''raspberry_handler.seq_number += 1;''
+	''for (r = 1; r < number_Patterns; r++) {''
+				// if the robot is found
+				''if (k[r] != -1) {''
+						// gets the transformation between robot and origin
+						''arUtilMatMul(wmat1, object[r].trans, wmat2);''
+						// prints the transformation of the robots
+						''locmsg_handler.id_sender=r;''
+
+						''for (j = 0; j < 3; j++) {''
+							''if(r!= 7)  ''// 7 is the index of the transport object
+								''{''
+										''if(j<2) ''// only record x, y information
+										''{''
+												''robot_states[6+4*(r-1)+j] = wmat2[j][3]/1000.0f;''  // store the position information in [m]
+												// ''robot_states[6+4*(r-1-2)+j] = wmat2[j][3]/1000.0f;''  // if one uses c-->a d-->b just in case of changing battery
+										}
+				''}''
+				''else{''
+										''if(j<2){''
+												''robot_states[j] = wmat2[j][3]/1000.0f;''
+										''}''
+										''else{''
+												''robot_states[j] = -atan2(wmat2[0][1],wmat2[0][0]); ''// rotation in [rad]
+										''}''
+								''}''	
+                             
+						''}''
+
+
+						''raspberry_handler.length = 1; ''// only the rotation angle
+						''raspberry_handler.value = vector<double>(locmsg_handler.length, 0);''
+						''raspberry_handler.value[0]=-atan2(wmat2[0][1],wmat2[0][0]);''
+						// locmsg_handler.seq_number = 0;
+						''string topic_name;''
+						''topic_name = "/robot";''
+						''topic_name += std::to_string(r);''
+						''topic_name += "/rot";''
+			  // send the rotation message to raspberry 
+						''lcm_handler.publish(topic_name, &raspberry_handler);''
+
+
+				   // send locmsg back to control unit
+				  ''if(ms - timer_msg > 20)'' // over 200 ms
+				  ''{''
+						''string topic_name;''
+						''topic_name = "/stateVector";''
+						''locmsg_handler.seq_number += 1;''
+						''locmsg_handler.length = robot_states.size();  ''// 6 for object position angle/velocity and 4 pos for each robot
+						''locmsg_handler.value = robot_states;''
+						''lcm_handler.publish(topic_name, &locmsg_handler);''
+						''timer_msg = (float)ms;''
+				 ''}''
+	

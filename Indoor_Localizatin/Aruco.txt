@@ -1,0 +1,12 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-07-02T09:56:14+08:00
+
+====== Aruco ======
+Created 星期一 02 七月 2018
+
+ArUco is an OpenSource library for camera pose estimation using squared markers. ArUco is written in C++ and is extremely fast. 
+
+website: https://www.uco.es/investiga/grupos/ava/node/26
+
+This is a promising way to obtain the indoor localization information 

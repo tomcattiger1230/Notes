@@ -1,0 +1,51 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-07-04T12:26:28+08:00
+
+====== LCM ======
+
+LCM is a lightweight communication marshalling. It's used in many researches. The project can be found in https://lcm-proj.github.io. One can download the file from this website and the current version is 1.3.1. 
+
+===== Installation =====
+Currently it can be only installed in Linux or OSX system. For both of these system, just follow the instruction of the homepage above. Usually there is no problem when one wants to install the support in C/C++. For java, it requires *javac* from JDK. 
+
+The problem occurs, when the python support is required. If one uses just original python from system, it performs ok. But a virtual python environment is installed, like anaconda, it's a little maddening. One possible solution is deactivate virtual environment and install *python-dev*. It will generate lcm libs in default path. Then change to virtual environment, install lcm again. Try to import lcm in a python script, it will indicate the 'lost' files, copy them from default python path. 
+
+===== Package generation =====
+Once the lcm is installed, one can to generate a useable package for C++/Python etc. 
+
+==== lcm file ====
+The general setting for LCM message or package is defined through a **.lcm **file. For example, 
+1. comm_robot.lcm, in RMB
+	''package comm_robot;''
+	''struct comm_rob_t''
+	''{''
+		''int64_t timestamp;''
+		''double position[3];''
+		''double orientation[3];''
+		''int16_t robot_id;''
+		''boolean enabled;''
+	''}''
+2. vector_t.com, in ITM
+	''package itmessage;''
+	''struct vector_t''
+	''{''
+		''int64_t  seq_number;'' // sequential number of the message
+		  ''int32_t  length;'' // length of the value vector / array
+		''double   value[length];'' // array / vector to be sent
+		''int32_t  id_sender;'' // unique id number of the sender
+	''}''
+ 
+
+==== create package ====
+LCM has provided a very simple way to create a LCM package
+for c++:
+	''lcm-gen -x comm_robot.lcm''
+for python
+	''lcm-gen -p comm_robot.lcm''
+
+
+===== LCM-spy =====
+The LCM-spy requires a java configuration for lcm. 
+1. run **buildjar.sh** to generate **.jar** file
+2. edit **runspy.sh** to detect certain LCM message defined by **.jar** file
