@@ -1,0 +1,8 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-07-22T23:58:33+02:00
+
+====== Python ======
+Created None
+
+In Raspberry original OS, one cann't install anaconda directly. The substitute method is to install 

@@ -1,0 +1,27 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-07-22T10:35:38+02:00
+
+====== Burn image on Raspberry ======
+Created None
+
+===== Using Linux or OS X =====
+In unix-based system, one can use ''dd'' command to burn image on a tf card of the raspberry.
+
+1. download an image from website
+2. insert the tf card into a sd card reader and check the name of the device in your syestem 
+	a. in OSX you use
+		''diskutil list''
+		to determine the driver's name 
+3. unmout the sd card reader so that we can write image on it
+	a. in OS X the command is
+		''sudo diskutil unmountDisk [your device's name]''
+4. using 
+	''sudo dd bs=1m if=./2018-06-27-raspbian-stretch.img of=/dev/disk3''
+	to burn the image on your tf card
+	
+===== Images available for raspberry =====
+Currently there are several available images which can be burned in raspberry.
+	1. official image can be found in 
+		https://www.raspberrypi.org/downloads/raspbian/
+

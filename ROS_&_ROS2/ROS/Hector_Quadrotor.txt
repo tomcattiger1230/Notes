@@ -18,7 +18,7 @@ so, one should continue doing:
 4. git clone -b kinetic-devel https://github.com/ros-controls/ros_control.git 
 5. git clone -b kinetic-devel https://github.com/ros-controls/realtime_tools.git
 6. git clone -b kinetic-devel https://github.com/ros-controls/control_toolbox.git
-7. it clone -b kinetic-devel https://github.com/tu-darmstadt-ros-pkg/hector_gazebo.git
+7. git clone -b kinetic-devel https://github.com/tu-darmstadt-ros-pkg/hector_gazebo.git
 8. git clone https://github.com/tu-darmstadt-ros-pkg/hector_localization.git
 9. git clone https://github.com/ros-geographic-info/unique_identifier.git
 10. git clone https://github.com/ros-simulation/gazebo_ros_pkgs.git
