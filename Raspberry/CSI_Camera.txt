@@ -1,0 +1,15 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-07-29T12:25:56+02:00
+
+====== CSI Camera ======
+Created None
+
+===== In rasperry system =====
+one activate csi camera through 
+	''sudo rpi-update'' # to make sure the v4L2 drive is available.
+	''sudo modprobe bcm2835-v4l2'' # to load it and create [[/dev/video0]]
+	
+===== In Ubuntu =====
+not sure yet
+

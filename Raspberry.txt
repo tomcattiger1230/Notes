@@ -5,3 +5,17 @@ Creation-Date: 2018-07-09T19:32:43+08:00
 ====== Raspberry ======
 Created None
 
+===== Solve g++: internal compiler error: Killed (program cc1plus) =====
+This problem is caused because raspberry ususally does not have large RAM for building, such as compiling Qt or OpenCV. Therefore we need to add a swap area for coding. 
+
+1. create a swap area 8G
+	dd if=/dev/zero of=/swapfile bs=1k count=8117000 
+2. generate swap file system 
+	sudo mkswap /swapfile
+3. activate swap file 
+	sudo chmod 0600 /swapfile
+	sudo swapon /swapfile
+4. setup auto activation
+	in [[/etc/fstab]] file adding,
+	 [[/swapfile]] swap swap defaults 0 0
+	

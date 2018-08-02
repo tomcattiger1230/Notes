@@ -5,3 +5,23 @@ Creation-Date: 2018-07-09T19:32:50+08:00
 ====== Autostart ======
 Created None
 
+The method is followed https://www.instructables.com/id/Raspberry-Pi-Launch-Python-script-on-startup/
+
+1. create a launch file
+	''vim launcher.sh''
+	in the file 
+		'''
+		#!/bin/sh
+		# launcher.sh
+		python xxx
+		'''
+ 
+2. take the file as executable 
+	''sudo chmod 755 launcher.sh''
+3. make a logs directory (some where)
+	mkdir logs
+4. edit crontab
+	''sudo crontab -e''
+	and enter a line 
+		@reboot sh /xxxxx/launcher.sh >/xxxxx/ogs/cronlog 2>&1
+

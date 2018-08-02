@@ -1,0 +1,13 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-08-02T10:14:38+02:00
+
+====== Compress Video ======
+Created 星期四 02 八月 2018
+ 
+
+===== Using ffmpeg =====
+through command:
+	ffmpeg -i 37713907-102-998769-134041.mp4 -vcodec libx264 -crf 20 -strict -2  output.mp4
+	where -crf is about the quaility of the video (smaller better)
+

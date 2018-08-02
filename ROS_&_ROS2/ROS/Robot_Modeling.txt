@@ -57,3 +57,9 @@ This tag is used when we include the simulation parameters of the Gazebo simulat
 	</gazebo>
 	
 
+===== Using xacro =====
+xacro is better than urcf 
+
+==== checking xacro ====
+simular to urcf, one can check the designed xacro file before implementation
+	''check_urdf <(xacro --inorder xxx.xacro)''

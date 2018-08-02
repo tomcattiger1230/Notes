@@ -2,11 +2,125 @@ Content-Type: text/x-zim-wiki
 Wiki-Format: zim 0.4
 Creation-Date: 2018-07-02T09:56:14+08:00
 
-====== Aruco ======
+====== ArUco ======
 Created 星期一 02 七月 2018
 
 ArUco is an OpenSource library for camera pose estimation using squared markers. ArUco is written in C++ and is extremely fast. 
 
 website: https://www.uco.es/investiga/grupos/ava/node/26
 
-This is a promising way to obtain the indoor localization information 
+This is a promising way to obtain the indoor localization information.
+
+===== Build OpenCV in Ubuntu 16.04 =====
+Since ArUco is one of the contribted packages from OpenCV, one should build OpenCV first.  In Ubuntu, one can follow the steps:
+	1. ''git clone https://github.com/opencv/opencv.git''
+	2. ''git clone https://github.com/opencv/opencv_contrib.git''
+	3. in foder {opencv} make a new folder ''{opencv}/build''
+	4. ''cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr/local -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules -D BUILD_TIFF=ON ..''
+	5. ''make -j8''
+	6. ''sudo make install'' 
+	7. ''sudo ldconfig''
+
+==== Notes ====
+The packages in OpenCV and ArUco are different, it's better not to use package in OpenCV since it is not the current version, and the markers from OpenCV and original ArUco are also different. 
+
+===== Build ArUco in Ubuntu or macOS =====
+
+Then one would like to build ArUco on its own, it can download [[https://sourceforge.net/projects/aruco/files/?source=navbar|SourceForge]]. The current version is 3.0.0 (Jun. 28, 2018).  The manual and introduction can be found in [[https://docs.google.com/document/d/1QU9KoBtjSM2kF6ITOjQ76xqL7H0TEtXriJX5kwi9Kgc/edit|web]]. 
+
+	and build in following steps:
+	1. ''unzip aruco-x.x.x.zip''
+	2. ''cd {aruco folder}''
+	3. ''mkdir build'' 
+	4. ''cd build'' 
+	5. ''cmake ..'' 
+	6. ''build -j4''
+	7. ''sudo make install'' 
+	8. ''sudo ldconfig''
+
+	I'm not sure, if I've set up something wrong, but it seems that the current version of ArUco cannot automatically detect the OpenCV2 and OpenCV3. Therefore, some settings should be done by (define the old CV2 parameter as CV3, and maintain the old files. In macOS every thing is fine):
+	1. utils/ aruco_test.cpp    ''#define CV_CAP_PROP_FRAME_COUNT cv::CAP_PROP_FRAME_COUNT'' 
+	2. utils_calibration/calibrator.cpp ''#define CV_CALIB_USE_INTRINSIC_GUESS cv::CALIB_USE_INTRINSIC_GUESS''
+	3. utils_calibration/aruco_calibration.cpp 
+			'''
+			#define CV_CAP_PROP_FOURCC cv::CAP_PROP_FOURCC
+			#define CV_FOURCC cv::VideoWriter::fourcc
+			#define CV_CAP_PROP_FRAME_WIDTH cv::CAP_PROP_FRAME_WIDTH
+			#define CV_CAP_PROP_FRAME_HEIGHT cv::CAP_PROP_FRAME_HEIGHT
+			'''
+
+	4. utils_markermap/sglviewer.h 
+			'''
+			#define cvPoint   cv::Point
+			#define cvScalar cv::Scalar
+			'''
+
+	5. src/markerdetector.cpp
+			'''
+			#define CV_RETR_LIST cv::RETR_LIST
+			#define CV_CHAIN_APPROX_NONE cv::CHAIN_APPROX_NONE
+			#define CV_BGR2GRAY cv::COLOR_BGR2GRAY
+			#define CV_GRAY2BGR cv::COLOR_GRAY2BGR
+			#define cvSize cv::Size
+			#define CV_AA cv::LINE_AA
+			#define cvScalar cv::Scalar
+			#define cvTermCriteria cv::TermCriteria
+			#define CV_TERMCRIT_ITER cv::TermCriteria::COUNT
+			#define CV_TERMCRIT_EPS cv::TermCriteria::EPS
+			'''
+
+	6. src/markerlabeler.cpp
+			force some returns as ''cv::Ptr<MarkerLabeler>''
+			
+===== Marker Mapperd =====
+This is also an excellent work from AVA. Their paper could be found [[http://xueshu.baidu.com/s?wd=paperuri:%28e91cac0e05cdacd6a525411cb9958d97%29&filter=sc_long_sign&tn=SE_xueshusource_2kduw22v&sc_vurl=http://arxiv.org/abs/1606.00151&ie=utf-8&sc_us=8558582784824410893|paper,]] and the source code can be found in [[https://sourceforge.net/projects/markermapper/files/?source=navbar|web]]. 
+	build the package 
+	1. unzip marker_mapper1.0.12.zip
+	2. cd marker_mapper1.0.12
+	3. mkdir build
+	4. cd build
+	5. cmake ..
+	6. make
+
+==== Create a map using camera ====
+After building, the package provides a function call **mapper_from_video**. Since the original function dosen't provide the ability to get the data from the second camera, one may need to add some codes in the original file **mapper_from_video.cpp**. 
+	from 
+		''if (string(argv[1])=="live") vcap.open(0);''
+	to
+		'''
+		string TheInputVideo=string(argv[1]);
+		if (TheInputVideo.find("live")!=std::string::npos) //vcap.open(0);
+			{
+		        	int vIdx = 0;
+		                // check if the :idx is here
+		                char cad[100];
+		                if (TheInputVideo.find(":") != string::npos)
+		                {
+		                    std::replace(TheInputVideo.begin(), TheInputVideo.end(), ':', ' ');
+		                    sscanf(TheInputVideo.c_str(), "%s %d", cad, &vIdx);
+		                }
+		                cout << "Opening camera index " << vIdx << endl;
+		                vcap.open(vIdx);
+		                vcap.set(CV_CAP_PROP_AUTOFOCUS, 0);
+		         }
+		'''
+
+
+Then we should set some parameters 
+	''./mapper_from_video live:1 camera_parameters.yml 0.134 -ref 0 -out basename -d ARUCO_MIP_36h12 -noshow''
+	
+After getting all markers, we will obtain several files
+	1. markerset.log
+	2. markerset.pcd
+	3. markerset.yml  (required for localizaton)
+	4. markerset-cam.yml (required for localization)
+
+The generated map can be check through ''pcl_viewer'' like ''pcl_viewer xxx.pcd''.
+
+
+
+===== Package for Localization for ITM =====
+After the 
+
+
+

@@ -1,0 +1,17 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-07-29T23:41:55+02:00
+
+====== WiFi setting ======
+Created None
+
+When I try to install a image from Ubuntu, I need to setup wifi networking. As server one can not use GUI for WiFi setting. The tool can be directly used is nmcli
+
+1. check devices 
+	''sudo nmcli dev''
+2. activate WiFi
+	''sudo nmcli r wifi on''
+3. scan hot point 
+	''sudo nmcli dev wifi''
+4. connect WiFi 
+	''sudo nmcli dev wifi connect "''**SSID**''" password "''**PASSWORD**''" ifname wlan0''

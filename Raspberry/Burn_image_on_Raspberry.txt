@@ -5,7 +5,7 @@ Creation-Date: 2018-07-22T10:35:38+02:00
 ====== Burn image on Raspberry ======
 Created None
 
-===== Using Linux or OS X =====
+===== Using OS X =====
 In unix-based system, one can use ''dd'' command to burn image on a tf card of the raspberry.
 
 1. download an image from website
@@ -20,8 +20,17 @@ In unix-based system, one can use ''dd'' command to burn image on a tf card of t
 	''sudo dd bs=1m if=./2018-06-27-raspbian-stretch.img of=/dev/disk3''
 	to burn the image on your tf card
 	
+
+===== Using Ubuntu =====
+1. check the position of the tf card by
+	''sudo fdisk -l''
+3. burn the image on the tf card
+	''sudo ddrescue -D --force ubuntu-mate-16.04.2-desktop-armhf-raspberry-pi.img /dev/sdb''
+	
 ===== Images available for raspberry =====
 Currently there are several available images which can be burned in raspberry.
 	1. official image can be found in 
 		https://www.raspberrypi.org/downloads/raspbian/
+	2. Ubuntu 16.04.02 Mate 
+			unxz ubuntu-mate-16.04.2-desktop-armhf-raspberry-pi.img.xz
 
